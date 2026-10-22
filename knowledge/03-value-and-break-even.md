@@ -9,14 +9,17 @@ time the human saved by starting from the agent's work. Both terms are
 multiplied by accuracy, because both depend on the agent's output being
 right: a wrong resolution saves nothing, and a wrong draft does not
 shorten anyone's handling time. At zero accuracy the model's value is
-zero, however impressive the containment dashboard looks.
+zero, however impressive the containment dashboard looks. (In the joined
+model the wrong containments are instead counted once as value and once
+as rework cost, which cancels to the same zero without billing a failure
+twice.)
 
 ## Break-even containment is the most useful single number
 
 Percentage ROI figures are hard to act on. Break-even containment is
 not: it is the share of tasks the agent must resolve alone for the use
 case to stop losing money, with everything else held at today's values.
-Internal IT help in the demo sits at 30% containment against a 42.8%
+Internal IT help in the demo sits at 30% containment against a 35.5%
 break-even — a concrete gap a team can plan against, or a reason to
 descope. The solver finds the crossing by bisection, and the test suite
 verifies it the only way that matters: it plugs the solved rate back

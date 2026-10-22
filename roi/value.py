@@ -82,11 +82,18 @@ def correctly_contained(inputs):
     return contained_tasks(inputs) * inputs.accuracy
 
 
-def value_breakdown(inputs):
+def value_breakdown(inputs, net_of_failures=True):
+    """Gross value for the period.
+
+    ``net_of_failures=True`` (standalone use) counts only correctly
+    contained tasks. ``compute.py`` passes ``False`` because it charges
+    failed containments separately as a rework *cost*; excluding them from
+    value as well would bill every failure twice.
+    """
     per_task = baseline_cost_per_task(inputs)
     contained = contained_tasks(inputs) * per_task
     assisted = assisted_tasks(inputs) * per_task * inputs.assisted_time_saving
     return ValueBreakdown(
-        contained_value=inputs.accuracy * contained,
+        contained_value=(inputs.accuracy * contained) if net_of_failures else contained,
         assisted_value=inputs.accuracy * assisted,
     )

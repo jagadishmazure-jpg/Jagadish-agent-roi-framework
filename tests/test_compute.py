@@ -13,7 +13,9 @@ from roi.compute import (
 
 # Hand-computed fixture (one month):
 #   human cost/task = 10/60 * 60                       = 10
-#   gross value     = .9*(2500*10) + .9*(2500*10*.2)   = 22500 + 4500 = 27000
+#   gross value     = 2500*10 + .9*(2500*10*.2)        = 25000 + 4500 = 29500
+#     (all contained tasks avoid first-pass handling; the 250 that fail
+#      are charged back below as rework, so they are billed exactly once)
 #   inference       = 5000 * .08                       = 400
 #   infra                                              = 250
 #   escalation rate = (1-.5)*.5 = .25 -> 1250 reviews
@@ -22,7 +24,8 @@ from roi.compute import (
 #   rework          = 250 * 10                         = 2500
 #   build amortised = 24000 / 24                      = 1000
 #   total cost                                         = 10400
-#   net = 16600, ROI = 159.6%, payback = 24000/16600   = 1.45 months
+#   net = 19100, ROI = 183.7%
+#   payback = 24000 / (19100 + 1000 amortised)        = 1.19 months
 #   correctly contained = 2250, cost/correct = 10400/2250 = 4.62
 UC = UseCase(
     name="Fixture",
@@ -50,10 +53,10 @@ def test_derived_rates_follow_containment_and_accuracy():
 
 def test_evaluate_headline_numbers():
     r = evaluate(UC)
-    assert r.gross_value == pytest.approx(27000.0)
+    assert r.gross_value == pytest.approx(29500.0)
     assert r.total_cost == pytest.approx(10400.0)
-    assert r.net_value == pytest.approx(16600.0)
-    assert r.roi_pct == pytest.approx(16600.0 / 10400.0 * 100.0)
+    assert r.net_value == pytest.approx(19100.0)
+    assert r.roi_pct == pytest.approx(19100.0 / 10400.0 * 100.0)
     assert r.human_cost_per_task == pytest.approx(10.0)
 
 
@@ -64,7 +67,7 @@ def test_cost_per_correct_resolution():
 
 def test_payback_months():
     r = evaluate(UC)
-    assert r.payback_months == pytest.approx(24000.0 / 16600.0)
+    assert r.payback_months == pytest.approx(24000.0 / 20100.0)
 
 
 def test_payback_zero_build_is_immediate():
@@ -115,7 +118,7 @@ def test_sensitivity_orders_low_base_high_for_a_strong_case():
 
 
 def test_sensitivity_flags_the_fragile_demo_case():
-    s = sensitivity(BY_NAME["Returns handling"])
+    s = sensitivity(BY_NAME["Internal IT help"])
     assert s.low_net < 0 < s.high_net
     assert s.fragile is True
 
@@ -175,8 +178,12 @@ def test_zero_containment_has_no_correct_resolutions():
 
 def test_zero_accuracy_earns_nothing_but_still_costs():
     r = evaluate(UC.with_changes(accuracy=0.0))
-    assert r.gross_value == 0.0
-    assert r.net_value == pytest.approx(-r.total_cost)
+    # Every contained task fails and is redone: containment value is
+    # exactly cancelled by rework, so nothing is earned net of rework.
+    from roi.costs import cost_breakdown
+    rework = cost_breakdown(UC.with_changes(accuracy=0.0).cost_inputs()).failure_rework
+    assert r.gross_value - rework == pytest.approx(0.0)
+    assert r.net_value < 0
     assert r.net_value < 0
 
 
@@ -196,3 +203,27 @@ def test_demo_portfolio_has_both_winners_and_a_loser():
     assert nets["Order status"] > 0
     assert nets["Support triage"] > 0
     assert nets["Internal IT help"] < 0
+
+
+def test_failed_containment_is_billed_once_not_twice():
+    # Review fix: a failed task used to be excluded from value AND charged
+    # as rework. Without the agent the task costs one baseline; with a
+    # failed agent attempt it costs one baseline of rework plus inference.
+    one = UseCase(name="one", volume=1, baseline_minutes=60.0, loaded_hourly_rate=10.0,
+                  containment_rate=1.0, accuracy=0.0, assisted_time_saving=0.0,
+                  avg_cost_per_request=1.0, infra_monthly=0.0, review_minutes=0.0,
+                  escalation_share=0.0, build_cost=0.0)
+    assert evaluate(one).net_value == pytest.approx(-1.0)  # only the inference is lost
+
+
+def test_payback_does_not_double_count_build_cost():
+    # Review fix: net already subtracts the amortised build share; payback
+    # must divide the build by the operating net, not by net-after-build.
+    uc = UC.with_changes(build_cost=12000.0, amortize_months=12)
+    r = evaluate(uc)
+    assert r.payback_months == pytest.approx(12000.0 / (r.net_value + 1000.0))
+
+
+def test_payback_beyond_amortisation_life_is_never():
+    r = evaluate(BY_NAME["Internal IT help"])
+    assert r.net_value < 0 and r.payback_months is None

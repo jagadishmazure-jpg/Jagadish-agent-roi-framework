@@ -33,9 +33,13 @@ number on the page.
   refuses to manufacture comforting numbers.
 
 **Numbers to quote (fictional demo, computed by the code).** Portfolio
-net $103,615.96/month at 141.6% ROI across four use cases; order status
-pays back in 0.6 months; internal IT help loses $4,061.46/month and
-never pays back at 30% containment against a 42.8% break-even.
+net $115,295.64/month at 157.6% ROI, 1.8-month payback across four use
+cases; order status pays back in 0.6 months; internal IT help loses
+$2,105.22/month (−12.9%) and never pays back at 30% containment against a
+35.5% break-even. Human review is the biggest cost line in every case.
+Review story: an earlier version billed failed tasks twice and
+double-counted the build in payback; fixing both moved ROI from 141.6% to
+157.6% and showed Returns was never actually fragile.
 
 **How it connects.** Trace observability supplies cost per successful
 request; evals supply accuracy; FinOps work supplies the infrastructure

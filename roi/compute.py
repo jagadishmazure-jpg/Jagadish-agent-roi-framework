@@ -88,7 +88,7 @@ class UseCaseResult:
 
 def _net(use_case):
     costs = cost_breakdown(use_case.cost_inputs())
-    value = value_breakdown(use_case.value_inputs())
+    value = value_breakdown(use_case.value_inputs(), net_of_failures=False)
     return value.gross - costs.total
 
 
@@ -101,8 +101,13 @@ def payback_months(use_case, net_value):
     """
     if use_case.build_cost <= 0:
         return 0.0
-    monthly_net = net_value / use_case.months
-    if monthly_net <= 0:
+    # ``net_value`` already subtracts the amortised build share; paying the
+    # build back out of a net that was charged for the build counts it twice.
+    amortised = use_case.build_cost / use_case.amortize_months * use_case.months
+    monthly_net = (net_value + amortised) / use_case.months
+    if monthly_net <= 0 or net_value < 0:
+        # A negative net means payback would take longer than the
+        # amortisation life: within its useful life it never pays back.
         return None
     return use_case.build_cost / monthly_net
 
@@ -148,7 +153,7 @@ def breakeven_containment(use_case):
 def evaluate(use_case):
     """Full ROI picture for one use case over its period."""
     costs = cost_breakdown(use_case.cost_inputs())
-    value = value_breakdown(use_case.value_inputs())
+    value = value_breakdown(use_case.value_inputs(), net_of_failures=False)
     net = value.gross - costs.total
     correct = correctly_contained(use_case.value_inputs())
     return UseCaseResult(
@@ -222,10 +227,12 @@ def rollup(use_cases):
     net = sum(r.net_value for r in results)
     build = sum(uc.build_cost for uc in use_cases)
     months = use_cases[0].months if use_cases else 1
-    monthly_net = net / months if months else 0.0
+    amortised = sum(uc.build_cost / uc.amortize_months * uc.months for uc in use_cases)
+    # Operating net (before the amortised build share) repays the build.
+    monthly_net = (net + amortised) / months if months else 0.0
     if build <= 0:
         payback = 0.0
-    elif monthly_net <= 0:
+    elif monthly_net <= 0 or net < 0:
         payback = None
     else:
         payback = build / monthly_net

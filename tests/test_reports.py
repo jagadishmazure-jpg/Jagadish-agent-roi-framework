@@ -1,5 +1,4 @@
 """Reports: rendered numbers must equal the engine's computed numbers."""
-import pytest
 
 from demos.meridian import CANDIDATES, USE_CASES
 from roi.compute import evaluate, rollup
@@ -47,10 +46,10 @@ def test_markdown_shows_breakeven_rates():
 
 
 def test_markdown_flags_fragile_and_stable_cases():
-    assert "FRAGILE" in MD  # Returns handling flips sign across the range
-    fragile_row = next(line for line in MD.splitlines() if "Returns handling" in line
+    assert "FRAGILE" in MD  # Internal IT help flips sign across the range
+    fragile_row = next(line for line in MD.splitlines() if "Internal IT help" in line
                        and "FRAGILE" in line)
-    assert fmt_money(RESULTS["Returns handling"].net_value) in fragile_row
+    assert fmt_money(RESULTS["Internal IT help"].net_value) in fragile_row
 
 
 def test_markdown_shows_negative_net_for_it_help():

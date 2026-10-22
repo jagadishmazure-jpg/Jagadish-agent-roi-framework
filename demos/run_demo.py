@@ -26,8 +26,8 @@ def main():
         f.write(md)
     with open(os.path.join(out_dir, "report.html"), "w", encoding="utf-8") as f:
         f.write(render_html(report, title))
-    print("wrote %s" % os.path.join(out_dir, "report.md"))
-    print("wrote %s" % os.path.join(out_dir, "report.html"))
+    print("wrote demos/output/report.md")
+    print("wrote demos/output/report.html")
 
 
 if __name__ == "__main__":

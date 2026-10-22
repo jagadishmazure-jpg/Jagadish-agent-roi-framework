@@ -4,19 +4,19 @@
 
 | Use case | Gross value | Total cost | Net value | ROI | Agent $/correct task | Human $/task | Payback | Break-even containment |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| Support triage | $71,849.75 | $21,848.84 | $50,000.91 | 228.8% | $2.11 | $5.70 | 1.0 mo | 5.8% |
-| Order status | $56,702.97 | $7,493.60 | $49,209.37 | 656.7% | $0.35 | $2.53 | 0.6 mo | 10.1% |
-| Returns handling | $35,989.80 | $27,522.67 | $8,467.13 | 30.8% | $9.27 | $8.87 | 10.0 mo | 32.4% |
-| Internal IT help | $12,231.65 | $16,293.11 | $-4,061.46 | -24.9% | $30.48 | $15.60 | never | 42.8% |
+| Support triage | $76,302.59 | $21,848.84 | $54,453.75 | 249.2% | $2.11 | $5.70 | 0.9 mo | 5.4% |
+| Order status | $58,382.57 | $7,493.60 | $50,888.97 | 679.1% | $0.35 | $2.53 | 0.6 mo | 9.8% |
+| Returns handling | $39,580.80 | $27,522.67 | $12,058.13 | 43.8% | $9.27 | $8.87 | 5.4 mo | 29.0% |
+| Internal IT help | $14,187.89 | $16,293.11 | $-2,105.22 | -12.9% | $30.48 | $15.60 | never | 35.5% |
 
 ## Portfolio rollup
 
-- Gross value: $176,774.17
+- Gross value: $188,453.85
 - Total cost: $73,158.21
-- Net value: $103,615.96
-- Portfolio ROI: 141.6%
+- Net value: $115,295.64
+- Portfolio ROI: 157.6%
 - Total build cost: $218,000.00
-- Portfolio payback: 2.1 mo
+- Portfolio payback: 1.8 mo
 
 ## Cost detail (where the money actually goes)
 
@@ -31,10 +31,10 @@
 
 | Use case | Pessimistic | Expected | Optimistic | Verdict |
 | --- | ---: | ---: | ---: | --- |
-| Support triage | $27,039.92 | $50,000.91 | $81,033.79 | stable |
-| Order status | $29,424.67 | $49,209.37 | $72,040.40 | stable |
-| Returns handling | $-2,006.05 | $8,467.13 | $24,174.62 | FRAGILE -- sign flips inside the plausible range |
-| Internal IT help | $-7,181.83 | $-4,061.46 | $1,453.99 | FRAGILE -- sign flips inside the plausible range |
+| Support triage | $32,161.72 | $54,453.75 | $82,806.72 | stable |
+| Order status | $32,586.27 | $50,888.97 | $72,040.40 | stable |
+| Returns handling | $1,159.35 | $12,058.13 | $27,246.92 | stable |
+| Internal IT help | $-5,863.95 | $-2,105.22 | $3,760.30 | FRAGILE -- sign flips inside the plausible range |
 
 ## Intake ranking (candidates not yet built)
 
