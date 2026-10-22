@@ -127,7 +127,6 @@ def breakeven_containment(use_case):
         return 0.0
     if net_at(1.0) < 0:
         return None
-    lo, hi = 0.0, 1.0
     step = 0.001
     prev = 0.0
     bracket = None
